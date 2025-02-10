@@ -1,0 +1,159 @@
+/* global.css */
+
+/* Reset default styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Basic layout structure */
+html, 
+body {
+  height: 100%;
+  background-color: #4b0082;
+}
+
+/* Layout container */
+.min-h-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header styles */
+header {
+  background-color: #ffd700;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  text-align: center;
+}
+
+header button {
+  background-color: #4b0082;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 0 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+header button:hover {
+  background-color: #9c1fda;
+}
+
+header button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+}
+
+/* Main content area */
+main {
+  flex-grow: 1;
+  padding: 2rem;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Footer styles */
+footer {
+  background-color: #ffd700;
+  color: #4b0082;
+  padding: 2rem;
+  margin-top: auto;
+  text-align: center;
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+  main {
+    padding: 1rem;
+  }
+
+  header {
+    padding: 0.75rem 1rem;
+  }
+
+  footer {
+    padding: 1.5rem 1rem;
+  }
+}
+
+/* Typography */
+body {
+  line-height: 1.5;
+  color: #ffffff;
+}
+
+/* Container for content width control */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Utility classes */
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.flex-grow {
+  flex-grow: 1;
+}
+
+/* Animation for smooth transitions */
+.header,
+.footer {
+  transition: all 0.3s ease;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Focus styles for accessibility */
+:focus {
+  outline: 2px solid #4299e1;
+  outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+  header,
+  footer {
+    display: none;
+  }
+
+  main {
+    padding: 0;
+  }
+
+  body {
+    background: white;
+  }
+}
