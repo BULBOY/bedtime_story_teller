@@ -1,6 +1,5 @@
 /* global.css */
-@import url('https://fonts.googleapis.com/css2?family=Griffy&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-
+@import url("https://fonts.googleapis.com/css2?family=Griffy&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
 /* Reset default styles */
 * {
@@ -9,21 +8,32 @@
   box-sizing: border-box;
 }
 
-/* Basic layout structure */
-
+/* Basic layout structure with fixed background */
 body {
   height: 100%;
   background-color: #4b0082;
-  background-image: 
-  url("/images/image1.png"),
-  url("/images/image3.png"),
-  url("/images/image3.png");
-  background-repeat: no-repeat, no-repeat, no-repeat;
-  background-size: 40%,55%,55%;
-  background-position: right bottom, left bottom;
-  
+  margin: 0%;
+  padding: 0%;
   color: #ffffff;
   line-height: 1.5;
+  position: relative; /* For proper stacking context */
+}
+
+/* Create a fixed background container */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* Place it behind content */
+  background-image: url("/images/image1.png"), url("/images/image3.png"),
+    url("/images/image3.png");
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  background-size: 40%, 55%, 55%;
+  background-position: right bottom, left bottom;
+  pointer-events: none; /* Allows clicking through to content */
 }
 
 /* Layout container */
@@ -31,6 +41,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  position: relative; /* For proper stacking with fixed background */
 }
 
 /* Header styles */
@@ -40,7 +51,7 @@ header {
   padding: 1rem 2rem;
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 110;
   text-align: center;
 }
 
@@ -71,6 +82,8 @@ header {
   width: 100%;
   margin: 0 auto;
   padding: 2rem;
+  position: relative; /* For proper stacking */
+  z-index: 1; /* Place content above background */
 }
 
 /* FOOTER STYLES */
@@ -83,12 +96,18 @@ header {
   font-size: 1rem;
   margin-top: auto;
   box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 110;
+  position: sticky;
+  bottom: 0; /* Add this line */
 }
 
 /* Responsive layout */
 @media (max-width: 768px) {
   body {
     font-size: 14px;
+  }
+  
+  body::before {
     background-size: 50%;
     background-position: center bottom;
   }
@@ -315,26 +334,43 @@ header {
   border: none;
 }
 
-/* CARD STYLES */
+/* CARD STYLES - UPDATED */
 .card {
   background-color: white;
   color: #4b0082;
-  padding: 20px;
+  padding: 24px;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  max-width: 400px;
-  text-align: center;
+  max-width: 800px; /* Increased from 400px */
+  width: 100%;
+  margin: 0 auto 20px auto;
+  text-align: left; /* Changed from center for story content */
+}
+
+.story-card {
+  background-color: white;
+  color: #4b0082;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  max-width: 900px; /* Even wider for stories */
+  width: 100%;
+  margin: 0 auto 24px auto;
+  text-align: left;
 }
 
 .card-title {
-  font-size: 1.5rem;
+  font-size: 1.8rem; /* Increased from 1.5rem */
   font-weight: bold;
+  margin-bottom: 16px;
+  color: #4b0082;
+  text-align: center;
 }
 
 .card-description {
-  font-size: 1rem;
+  font-size: 1.1rem; /* Increased from 1rem */
   color: #555;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
 }
 
 /* FORM STYLES */
@@ -408,20 +444,19 @@ header {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  background:#ffd700;
+  background: #ffd700;
   padding: 2rem;
   border-radius: 10px;
   max-width: 400px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   text-align: center;
-
 }
 
 .form-container-base {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  background:#4b0082;
+  background: #4b0082;
   padding: 2rem;
   border-radius: 10px;
   max-width: 400px;
@@ -429,8 +464,7 @@ header {
   text-align: center;
   border: #ffd700;
   border-style: outset;
- margin-top: 20%;
-
+  margin-top: 20%;
 }
 
 .form-footer {
@@ -450,15 +484,71 @@ header {
 }
 
 /* DASHBOARD STYLES */
-.dashboard-container {
+
+/* Parent Dashboard - Sidebar Style */
+.parent-dashboard-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Sidebar (Left Container) */
+.dashboard-actions-container {
+  width: 250px;
+  height: calc(100vh - 64px); /* Full height minus header height */
+  background-color: #4b0082;
+  color: white;
+  padding: 1.5rem 1rem;
+  border-radius: 0 12px 12px 0;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: fixed; /* Stick to the far left */
+  left: 0;
+  top: 64px; /* Match the header height */
+  z-index: 100; /* Make sure it stays on top */
+  animation: slideIn 0.5s ease-in-out;
+}
+
+/* Main Content (Right Container) */
+.recent-stories-container {
   padding: 2rem;
+  color: #4b0082;
+  border-radius: 12px;
+  /* box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.1); */
+  margin-left: 260px; /* To avoid overlapping with the sidebar */
+  margin-top: 64px; /* Match the header height */
+}
+
+/* Dashboard Buttons */
+.dashboard-actions button {
+  display: block;
+  width: 100%;
+  margin: 0.5rem 0;
+  padding: 0.8rem;
+  font-size: 1rem;
+  border-radius: 12px;
   text-align: center;
+  transition: transform 0.2s ease;
 }
 
 .dashboard-title {
-  font-size: 2.5rem;
+  font-size: 1.8rem;
   font-weight: bold;
-  color: white;
+  margin-bottom: 1rem;
+  text-align: center;
+  color: #ffd700;
 }
 
 .dashboard-description {
@@ -469,22 +559,39 @@ header {
 
 .dashboard-actions {
   display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  flex-direction: column; /* Stack buttons vertically */
+  gap: 0.5rem;
 }
 
+/* Dashboard Buttons */
+.dashboard-actions button {
+  display: block;
+  width: 100%;
+  margin: 0.5rem 0;
+  padding: 0.8rem;
+  font-size: 1rem;
+  border-radius: 12px;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+/* Dashboard Subtitle (Recent Stories) */
 .dashboard-subtitle {
-  font-size: 1.8rem;
+  font-size: 2rem;
   color: white;
-  margin-top: 2rem;
+  margin: 0;
+  text-align: center;
 }
 
+/* Grid Layout for Stories */
 .stories-list {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1rem;
   justify-content: center;
-  margin-top: 2rem;
+  padding: 1rem;
+  margin-top: 0;
+  padding-top: 0;
 }
 
 /* PROFILE PAGE STYLES */
@@ -524,6 +631,148 @@ label {
   margin: 1rem 0;
   font-size: 1.1rem;
   color: white;
+}
+
+
+/* TAG INPUT STYLES */
+.tag-item {
+  display: flex;
+  align-items: center;
+  background-color: rgba(75, 0, 130, 0.1); /* Light purple background */
+  color: #4b0082; /* Indigo text color */
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: 1px solid rgba(75, 0, 130, 0.2);
+  transition: all 0.2s ease;
+}
+
+.tag-item:hover {
+  background-color: rgba(75, 0, 130, 0.15);
+}
+
+.tag-remove-btn {
+  margin-left: 6px;
+  font-size: 1.2rem;
+  line-height: 1;
+  color: #4b0082;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.tag-remove-btn:hover {
+  opacity: 1;
+  background-color: rgba(75, 0, 130, 0.1);
+}
+
+/* FORM STYLES - UPDATED */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label, .input-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #4b0082;
+}
+
+.input-field, .form-textarea, .form-select, .form-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #4b0082;
+  background-color: white;
+  transition: border-color 0.3s ease;
+}
+
+.input-field:focus, .form-textarea:focus, .form-select:focus, .form-input:focus {
+  border-color: #ffd700;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3);
+}
+
+textarea.input-field {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Checkbox styling */
+.category-label {
+  color: #4b0082;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.category-label:hover {
+  background-color: rgba(255, 215, 0, 0.1);
+}
+
+.category-checkbox {
+  accent-color: #4b0082;
+  width: 18px;
+  height: 18px;
+}
+
+/* Make sure form in card has proper styling */
+.card form {
+  max-width: 100%;
+}
+
+/* Adjust form inside cards */
+.card .form-group {
+  margin-bottom: 1.5rem;
+}
+
+/* Form placeholder text */
+::placeholder {
+  color: #a0aec0;
+}
+
+/* Form disabled state */
+.input-field:disabled, .form-select:disabled, .form-input:disabled {
+  background-color: #f7fafc;
+  cursor: not-allowed;
+}
+
+/* CATEGORY CHECKBOX STYLES */
+.category-label {
+  color: #4b0082;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid rgba(75, 0, 130, 0.1);
+  background-color: rgba(255, 215, 0, 0.05);
+}
+
+.category-label:hover {
+  background-color: rgba(255, 215, 0, 0.15);
+}
+
+.category-label.selected {
+  background-color: rgba(255, 215, 0, 0.2);
+  border-color: rgba(255, 215, 0, 0.4);
+}
+
+.category-checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: #4b0082;
+  cursor: pointer;
 }
 
 /* CREATE STORY PAGE */
@@ -603,4 +852,157 @@ label {
 .form-role {
   color: #4b0082;
   font-weight: bold;
+}
+
+.logout-button {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  background-color: #4b0082;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.user-info {
+  position: absolute;
+  top: 10px;
+  right: 90px;
+  font-weight: bold;
+  font-size: 1rem;
+  color: #4b0082;
+  background-color: #ffd700;
+  padding: 6px 12px;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+/* Story Editing Styles */
+textarea.input-field.h-96 {
+  line-height: 1.6;
+  padding: 16px;
+  font-family: "Poppins", sans-serif;
+  color: #4b0082;
+}
+
+.story-card .prose p {
+  color: #4b0082;
+  line-height: 1.8;
+  margin-bottom: 1.2rem;
+}
+
+/* Styling for the edit button bar */
+.story-card .flex.justify-between {
+  border-bottom: 1px solid rgba(75, 0, 130, 0.1);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+/* Focus style for the edit textarea */
+textarea.input-field.h-96:focus {
+  border-color: #ffd700;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  /* Responsive layout for Home Page */
+  .home-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1rem;
+    margin: 0 auto;
+  }
+
+  .home-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .home-description {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .cta-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    justify-content: center;
+  }
+
+  /* Media Query for Smaller Screens */
+  @media (max-width: 768px) {
+    .home-title {
+      font-size: 2rem;
+    }
+
+    .home-description {
+      font-size: 1rem;
+      padding: 0.5rem;
+    }
+
+    .cta-container {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .cta-button {
+      width: 90%;
+      max-width: 300px;
+    }
+
+    .parent-dashboard-container {
+      flex-direction: column;
+      padding-top: 2rem;
+    }
+
+    .dashboard-actions-container {
+      width: 100%; /* Full width on mobile */
+      border-radius: 0; /* Remove rounded corners for a more natural mobile look */
+      margin-bottom: 1rem;
+      position: relative; /* Avoid fixed positioning on mobile */
+      top: 0;
+      animation: none; /* Disable animation on mobile */
+    }
+
+    .dashboard-actions {
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .recent-stories-container {
+      width: 100%; /* Full width on mobile */
+      padding: 1rem;
+      margin: 0 auto;
+      margin-top: 1rem;
+    }
+
+    .dashboard-subtitle {
+      text-align: center;
+      margin-top: 0;
+    }
+
+    .stories-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      justify-items: center;
+    }
+
+    .logout-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 100;
+    }
+  }
 }
