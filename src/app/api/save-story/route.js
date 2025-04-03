@@ -8,7 +8,7 @@ export async function POST(request) {
     const storyData = await request.json();
     
     // Validate that we have the required data
-    if (!storyData.id || !storyData.story || !storyData.metadata) {
+    if ( !storyData.story || !storyData.metadata || !storyData.id) {
       return NextResponse.json({ 
         error: 'Missing required story data' 
       }, { status: 400 });
@@ -22,7 +22,8 @@ export async function POST(request) {
     // Save to Firebase
     await saveStory(storyData.id, {
       story: storyData.story,
-      metadata: storyData.metadata
+      metadata: storyData.metadata,
+      userId: storyData.userId 
     });
     
     // Return success

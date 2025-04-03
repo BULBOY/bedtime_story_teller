@@ -152,7 +152,8 @@ export async function getStories({
   ageMax = null,
   theme = null,
   sortBy = 'createdAt',
-  sortOrder = 'desc'
+  sortOrder = 'desc',
+  userId = null // Add userId parameter
 }) {
   try {
     // Unfortunately, Firestore doesn't directly support all the complex filtering we need
@@ -176,7 +177,16 @@ export async function getStories({
       };
     });
     
-    // Apply filters
+    // Filter by userId if provided
+    if (userId) {
+      stories = stories.filter(story => 
+        // Check for userId in both places depending on how it was saved
+        (story.metadata && story.metadata.userId === userId) || 
+        story.userId === userId
+      );
+    }
+    
+    // Apply other filters
     if (tags) {
       const tagArray = tags.split(',').map(t => t.trim().toLowerCase());
       stories = stories.filter(story => {
@@ -265,7 +275,7 @@ export async function getAllTags() {
     const allTags = new Set();
     storiesSnap.docs.forEach(doc => {
       const storyData = doc.data();
-      const storyTags = storyData.metadata.tags || [];
+      const storyTags = storyData.metadata?.tags || [];
       storyTags.forEach(tag => allTags.add(tag));
     });
     
@@ -288,7 +298,7 @@ export async function getAllCategories() {
     const allCategories = new Set();
     storiesSnap.docs.forEach(doc => {
       const storyData = doc.data();
-      const storyCategories = storyData.metadata.categories || [];
+      const storyCategories = storyData.metadata?.categories || [];
       storyCategories.forEach(category => allCategories.add(category));
     });
     

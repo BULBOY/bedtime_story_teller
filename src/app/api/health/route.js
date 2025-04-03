@@ -1,24 +1,10 @@
 // app/api/health/route.js
 import { NextResponse } from 'next/server';
 import { getFirestore, collection, getDocs, limit, query } from 'firebase/firestore';
-import { initializeApp } from 'firebase/app';
-
-// Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyAUgpEh6RKaXYXodGpiEMBS0_NB6mxOxeg",
-  authDomain: "bedtime-story-teller-cc53b.firebaseapp.com",
-  projectId: "bedtime-story-teller-cc53b",
-  storageBucket: "bedtime-story-teller-cc53b.firebasestorage.app",
-  messagingSenderId: "710677768387",
-  appId: "1:710677768387:web:d19d38e479dd56a298da76"
-};
+import { auth, db } from 'src/lib/firebase/firebase_conf';
 
 export async function GET() {
   try {
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    
     // Check Firebase connection by querying a small amount of data
     const storiesRef = collection(db, 'stories');
     const q = query(storiesRef, limit(1));
@@ -36,6 +22,7 @@ export async function GET() {
       apiConfigured: apiKeyPresent,
       databaseConnected: true,
       storyCount: storyCount,
+      authInitialized: auth ? true : false,
       uptime: Math.floor(process.uptime()) + ' seconds'
     });
   } catch (error) {

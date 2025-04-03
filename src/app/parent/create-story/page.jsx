@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import StoryForm from '@components/StoryForm';
 import LoadingSpinner from '@components/LoadingSpinner';
 import Button from "@components/Button";
+import { useSession, signOut } from "next-auth/react";
 
 export default function CreateStory() {
   const router = useRouter();
@@ -14,6 +15,7 @@ export default function CreateStory() {
   const [generatedStory, setGeneratedStory] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedStory, setEditedStory] = useState('');
+  const { data: session, status } = useSession();
   
   const handleSubmit = async (storyData) => {
     setLoading(true);
@@ -60,7 +62,12 @@ export default function CreateStory() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(generatedStory),
+        body: JSON.stringify({
+          id: generatedStory.id, // Assuming this is the story ID
+          story: generatedStory.story, // Extract the story part
+          metadata: generatedStory.metadata, // Extract the metadata part
+          userId: session.user.id // Include userId in the request body
+        }),
       });
       
       if (!response.ok) {

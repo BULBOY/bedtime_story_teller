@@ -16,6 +16,7 @@ export async function GET(request) {
     const theme = searchParams.get('theme');
     const sortBy = searchParams.get('sortBy') || 'createdAt';
     const sortOrder = searchParams.get('sortOrder') || 'desc';
+    const userId = searchParams.get('userId'); // Get userId from query params
     
     // Get stories from Firebase with filters
     const { stories, total, totalPages } = await getStories({
@@ -27,7 +28,8 @@ export async function GET(request) {
       ageMax,
       theme,
       sortBy,
-      sortOrder
+      sortOrder,
+      userId  // Pass userId to filter by user
     });
     
     // Return the stories with pagination metadata

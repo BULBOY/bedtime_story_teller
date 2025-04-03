@@ -32,22 +32,6 @@ export const authOptions = {
           const userDoc = await getDoc(doc(db, "users", user.uid));
           const userData = userDoc.exists() ? userDoc.data() : {};
           
-          // Perform health check after successful authentication
-          try {
-            // This is a server-side function, so we need to use absolute URL
-            const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
-            const healthResponse = await fetch(`${baseUrl}/api/health`);
-            const healthData = await healthResponse.json();
-            
-            // Log health status for monitoring
-            console.log('System health on login:', healthData);
-            
-            // You could also log this to your monitoring system
-          } catch (healthError) {
-            // Don't fail login if health check fails
-            console.error('Health check failed during login:', healthError);
-          }
-          
           // Return user object with role
           return {
             id: user.uid,
