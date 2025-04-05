@@ -61,6 +61,7 @@ export async function saveStory(id, storyData) {
 export async function getStory(id) {
   try {
     const storyRef = doc(db, STORIES_COLLECTION, id);
+    console.log(storyRef);
     const storySnap = await getDoc(storyRef);
     
     if (!storySnap.exists()) {
@@ -129,11 +130,22 @@ export async function updateStory(id, updates) {
  */
 export async function deleteStory(id) {
   try {
+    console.log(`Inside deleteStory function with ID: ${id}`);
+    // First check if document exists
     const storyRef = doc(db, STORIES_COLLECTION, id);
+    const storyDoc = await getDoc(storyRef);
+    
+    if (!storyDoc.exists()) {
+      console.log(`Document with ID ${id} does not exist in Firestore`);
+      throw new Error(`Document with ID ${id} not found`);
+    }
+    
+    console.log(`Document exists, attempting to delete: ${id}`);
     await deleteDoc(storyRef);
+    console.log(`Successfully deleted document: ${id}`);
     return true;
   } catch (error) {
-    console.error('Error deleting story from Firestore:', error);
+    console.error(`Error deleting story ${id} from Firestore:`, error);
     throw error;
   }
 }

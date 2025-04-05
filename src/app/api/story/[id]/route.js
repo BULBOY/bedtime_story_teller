@@ -4,12 +4,12 @@ import {
   checkRateLimit,
   editStory, 
   generateTags
-} from '../../../lib/core-services';
+} from '../../lib/core-services';
 import { 
   getStory, 
   updateStory, 
   deleteStory 
-} from '../../../lib/firebase-service';
+} from '../../lib/firebase-service';
 
 export async function GET(request, { params }) {
   try {
@@ -174,6 +174,7 @@ export async function DELETE(request, { params }) {
     
     // Check if story exists
     const storyData = await getStory(id);
+    console.log(storyData);
     if (!storyData) {
       return NextResponse.json({
         error: 'Story not found',

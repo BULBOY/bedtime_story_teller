@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
 import LoadingSpinner from '@components/LoadingSpinner';
+import Button from "@components/Button";
 
 export default function MyStories() {
   const router = useRouter();
@@ -52,6 +53,12 @@ export default function MyStories() {
       const response = await fetch(`/api/story/${storyId}`, {
         method: 'DELETE',
       });
+
+      if (response.status === 404) {
+        console.error(`Story not found: ${storyId}`);
+        setError(`Story not found. It may have been already deleted.`);
+        return;
+      }
       
       if (!response.ok) {
         const errorData = await response.json();
@@ -96,6 +103,39 @@ export default function MyStories() {
   return (
     <div className="create-story-container max-w-5xl mx-auto">
       <h1 className="create-story-title">My Stories</h1>
+
+      {/* Sidebar / Navbar on the left */}
+                  <div className="dashboard-actions-container">
+                    <h1 className="dashboard-title">Parent Dashboard</h1>
+                    <p className="dashboard-description">Manage your bedtime stories</p>
+            
+                    <div className="dashboard-actions">
+                      <Button
+                        variant="secondary"
+                        onClick={() => (window.location.href = "/parent/create-story")}
+                      >
+                        Create New Story
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        onClick={() => (window.location.href = "/parent/my-stories")}
+                      >
+                        My Stories
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        onClick={() => (window.location.href = "/parent/profile")}
+                      >
+                        Profile
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        onClick={() => (window.location.href = "/parent/settings")}
+                      >
+                        Settings
+                      </Button>
+                    </div>
+                  </div>
       
       {error && (
         <div className="card border-l-4 border-red-500 p-4 mb-6">
@@ -103,18 +143,21 @@ export default function MyStories() {
         </div>
       )}
       
-      <div className="story-actions mt-6 flex justify-center gap-4 mb-8">
-        <Link href="/create-story" className="button primary">
+      {/* <div className="story-actions mt-6 flex justify-center gap-4 mb-6">
+        <Link href="/parent/create-story" className="button primary">
           Create New Story
         </Link>
-      </div>
+      </div> */}
       
       {stories.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {stories.map((story) => (
             <div key={story.id} className="card">
-              <h3 className="card-title">
+              {/* <h3 className="card-title">
                 {story.metadata?.theme?.charAt(0).toUpperCase() + story.metadata?.theme?.slice(1) || 'Untitled'} Story
+              </h3> */}
+              <h3 className="card-title">
+                    {story.metadata?.title || "Untitled Story"}
               </h3>
               <p className="text-indigo-800 mb-4">
                 {getStoryPreview(story.story)}
@@ -158,8 +201,12 @@ export default function MyStories() {
                 <button 
                   onClick={() => handleDeleteStory(story.id)}
                   disabled={deletingStoryId === story.id}
-                  className={`${deletingStoryId === story.id ? 'button disabled' : 'button'} text-sm px-4 py-2`}
-                  style={{ backgroundColor: '#e53e3e', color: 'white', borderColor: '#e53e3e' }}
+                  className="button secondary text-sm px-4 py-2"
+                  style={{ 
+                  backgroundColor: deletingStoryId === story.id ? '#e2e8f0' : '#e53e3e', 
+                  color: 'white',
+                  border: 'none'
+                  }}
                 >
                   {deletingStoryId === story.id ? 'Deleting...' : 'Delete'}
                 </button>
@@ -171,7 +218,7 @@ export default function MyStories() {
         <div className="card text-center py-8">
           <p className="text-xl text-indigo-800 mb-4">You haven't created any stories yet.</p>
           <p className="text-indigo-600 mb-6">Create your first magical bedtime story!</p>
-          <Link href="/create-story" className="button primary">
+          <Link href="/parent/create-story" className="button primary">
             Create Your First Story
           </Link>
         </div>

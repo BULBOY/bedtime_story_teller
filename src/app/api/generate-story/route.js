@@ -28,7 +28,7 @@ export async function POST(request) {
     
     // Parse request body
     const body = await request.json();
-    const { prompt, age, theme, length, categories, customTags } = body;
+    const { prompt, age, theme, length, categories, customTags, title } = body;
     
     // Validate required parameters
     if (!prompt || !age || !theme) {
@@ -58,6 +58,7 @@ export async function POST(request) {
       id: storyId,
       story,
       metadata: {
+        title,
         provider: 'google',
         age,
         theme,

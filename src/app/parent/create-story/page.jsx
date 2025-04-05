@@ -159,7 +159,7 @@ export default function CreateStory() {
         <div>
           <div className="story-card">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="card-title">Preview Your Story</h2>
+              <h2 className="card-title">{generatedStory.metadata?.title || "Untitled Story"}</h2>
               <button 
                 onClick={handleStoryEdit}
                 className="button secondary text-sm px-4 py-2"

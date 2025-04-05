@@ -5,6 +5,7 @@ import Button from "@components/Button";
 
 export default function StoryForm({ onSubmit, initialData = {} }) {
   const [formData, setFormData] = useState({
+    title: initialData.title || '',
     prompt: initialData.prompt || '',
     age: initialData.age || 7,
     theme: initialData.theme || 'adventure',
@@ -57,6 +58,18 @@ export default function StoryForm({ onSubmit, initialData = {} }) {
   return (
     <form onSubmit={handleSubmit} className="story-card">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="form-group md:col-span-2">
+        <label htmlFor="title" className="form-label">Story Title</label>
+        <input
+         id="title"
+          name="title"
+          value={formData.title}
+          onChange={handleChange}
+          placeholder="Enter a title for your story..."
+          className="form-input"
+          required
+        />
+        </div>
         <div className="form-group md:col-span-2">
           <label htmlFor="prompt" className="form-label">Story Prompt</label>
           <textarea
@@ -173,13 +186,23 @@ export default function StoryForm({ onSubmit, initialData = {} }) {
         )}
       </div>
       
-      <div className="mt-6 flex justify-center">
-        <Button 
-            type="submit" 
-            variant="primary"
-        >
-            {isEdit ? 'Update Story' : 'Generate Story'}
-        </Button>
+      <div className="mt-6 flex justify-center gap-4">
+          {/* Cancel button */}
+          <Button 
+              type="button" // Important: type="button" prevents form submission
+              variant="secondary"
+              onClick={() => window.history.back()} // Go back to previous page
+          >
+            Cancel
+          </Button>
+  
+          {/* Submit button */}
+          <Button 
+              type="submit" 
+              variant="primary"
+          >
+              {isEdit ? 'Update Story' : 'Generate Story'}
+          </Button>
       </div>
     </form>
   );
