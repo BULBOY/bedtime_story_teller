@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google-cloud/text-to-speech": "^6.0.1",
     "@google/generative-ai": "^0.24.0",
     "firebase": "^11.5.0",
     "firebase-admin": "^13.2.0",

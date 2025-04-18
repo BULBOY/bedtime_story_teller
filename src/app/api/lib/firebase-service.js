@@ -1,19 +1,12 @@
 // app/api/lib/firebase-service.js
 import { 
-  getFirestore, 
   collection, 
   doc, 
   getDoc, 
   getDocs, 
   setDoc, 
   updateDoc, 
-  deleteDoc,
-  query,
-  where,
-  orderBy,
-  limit,
-  startAt,
-  Timestamp 
+  deleteDoc
 } from "firebase/firestore";
 import { db } from "src/lib/firebase/firebase_conf";
 
@@ -35,15 +28,9 @@ export async function saveStory(id, storyData) {
     const processedData = {
       ...storyData,
       metadata: {
-        ...storyData.metadata,
-        createdAt: Timestamp.fromDate(new Date(storyData.metadata.createdAt))
+        ...storyData.metadata
       }
     };
-    
-    // Add lastEdited timestamp if it exists
-    if (storyData.metadata.lastEdited) {
-      processedData.metadata.lastEdited = Timestamp.fromDate(new Date(storyData.metadata.lastEdited));
-    }
     
     await setDoc(storyRef, processedData);
     return true;
@@ -75,9 +62,7 @@ export async function getStory(id) {
       ...data,
       id: storySnap.id,
       metadata: {
-        ...data.metadata,
-        createdAt: data.metadata.createdAt.toDate().toISOString(),
-        lastEdited: data.metadata.lastEdited ? data.metadata.lastEdited.toDate().toISOString() : undefined
+        ...data.metadata
       }
     };
   } catch (error) {
@@ -101,18 +86,7 @@ export async function updateStory(id, updates) {
     
     if (updates.metadata) {
       processedUpdates.metadata = { ...updates.metadata };
-      
-      if (updates.metadata.lastEdited) {
-        processedUpdates.metadata.lastEdited = Timestamp.fromDate(new Date(updates.metadata.lastEdited));
-      }
-      
-      if (updates.metadata.lastTagUpdate) {
-        processedUpdates.metadata.lastTagUpdate = Timestamp.fromDate(new Date(updates.metadata.lastTagUpdate));
-      }
-      
-      if (updates.metadata.lastCategoryUpdate) {
-        processedUpdates.metadata.lastCategoryUpdate = Timestamp.fromDate(new Date(updates.metadata.lastCategoryUpdate));
-      }
+    
     }
     
     await updateDoc(storyRef, processedUpdates);
@@ -180,11 +154,7 @@ export async function getStories({
         ...data,
         id: doc.id,
         metadata: {
-          ...data.metadata,
-          createdAt: data.metadata.createdAt.toDate().toISOString(),
-          lastEdited: data.metadata.lastEdited ? data.metadata.lastEdited.toDate().toISOString() : undefined,
-          lastTagUpdate: data.metadata.lastTagUpdate ? data.metadata.lastTagUpdate.toDate().toISOString() : undefined,
-          lastCategoryUpdate: data.metadata.lastCategoryUpdate ? data.metadata.lastCategoryUpdate.toDate().toISOString() : undefined
+          ...data.metadata
         }
       };
     });
@@ -234,21 +204,21 @@ export async function getStories({
       
       // Get the values to compare based on sortBy
       switch (sortBy) {
-        case 'createdAt':
-          valA = new Date(a.metadata.createdAt).getTime();
-          valB = new Date(b.metadata.createdAt).getTime();
-          break;
-        case 'lastEdited':
-          valA = a.metadata.lastEdited ? new Date(a.metadata.lastEdited).getTime() : 0;
-          valB = b.metadata.lastEdited ? new Date(b.metadata.lastEdited).getTime() : 0;
-          break;
+        // case 'createdAt':
+        //   valA = new Date(a.metadata.createdAt).getTime();
+        //   valB = new Date(b.metadata.createdAt).getTime();
+        //   break;
+        // case 'lastEdited':
+        //   valA = a.metadata.lastEdited ? new Date(a.metadata.lastEdited).getTime() : 0;
+        //   valB = b.metadata.lastEdited ? new Date(b.metadata.lastEdited).getTime() : 0;
+        //   break;
         case 'age':
           valA = a.metadata.age;
           valB = b.metadata.age;
           break;
         default:
-          valA = new Date(a.metadata.createdAt).getTime();
-          valB = new Date(b.metadata.createdAt).getTime();
+          valA = a.metadata.age;
+          valB = b.metadata.age;
       }
       
       // Apply sort order

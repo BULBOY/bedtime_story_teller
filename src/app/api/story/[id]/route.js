@@ -59,7 +59,18 @@ export async function PUT(request, { params }) {
     
     // Parse request body
     const body = await request.json();
-    const { editInstructions, customTags, addTags, removeTags, categories } = body;
+    const { 
+      editInstructions, 
+      customTags, 
+      addTags, 
+      removeTags, 
+      categories,
+      title,
+      prompt,
+      age,
+      theme,
+      length
+    } = body;
     
     // Get the existing story
     const storyData = await getStory(id);
@@ -86,41 +97,49 @@ export async function PUT(request, { params }) {
     const editedStory = await editStory(
       story,
       editInstructions,
-      metadata.age,
-      metadata.theme,
-      metadata.length
+      age || metadata.age,
+      theme || metadata.theme,
+      length || metadata.length
     );
     
-    // Get current tags or initialize empty array
-    let currentTags = metadata.tags || [];
+    // Generate fresh tags based on the edited story
+    let generatedTags = [];
+    try {
+      // Use the existing generateTags function from core-services
+      generatedTags = await generateTags(
+        editedStory, 
+        age || metadata.age, 
+        theme || metadata.theme
+      );
+    } catch (tagError) {
+      console.error('Error generating tags for updated story:', tagError);
+      // Continue with existing tags if generation fails
+      generatedTags = [];
+    }
     
     // Handle tag operations
-    if (customTags) {
-      // Replace all tags with custom tags
-      currentTags = customTags.map(tag => tag.toLowerCase());
+    let currentTags = [];
+    
+    if (customTags && customTags.length > 0) {
+      // If custom tags were provided, merge them with generated tags
+      const lowerCustomTags = customTags.map(tag => tag.toLowerCase());
+      currentTags = [...new Set([...generatedTags, ...lowerCustomTags])];
+    } else if (generatedTags.length > 0) {
+      // If only generated tags are available, use those
+      currentTags = generatedTags;
     } else {
-      // Add new tags if specified
+      // Fallback to the existing tags if nothing else is available
+      currentTags = metadata.tags || [];
+      
+      // Add/remove specific tags if requested
       if (addTags && addTags.length > 0) {
         const newTags = addTags.map(tag => tag.toLowerCase());
         currentTags = [...new Set([...currentTags, ...newTags])];
       }
       
-      // Remove tags if specified
       if (removeTags && removeTags.length > 0) {
         const tagsToRemove = removeTags.map(tag => tag.toLowerCase());
         currentTags = currentTags.filter(tag => !tagsToRemove.includes(tag));
-      }
-      
-      // If significant edits were made, regenerate tags
-      if (editInstructions.length > 20) {
-        try {
-          const regeneratedTags = await generateTags(editedStory, metadata.age, metadata.theme);
-          // Merge while preserving manually added tags
-          currentTags = [...new Set([...currentTags, ...regeneratedTags])];
-        } catch (error) {
-          console.error('Error regenerating tags after edit:', error);
-          // Continue with existing tags
-        }
       }
     }
     
@@ -137,6 +156,12 @@ export async function PUT(request, { params }) {
       story: editedStory,
       metadata: {
         ...metadata,
+        // Update these fields if they were provided in the request
+        title: title !== undefined ? title : metadata.title,
+        prompt: prompt !== undefined ? prompt : metadata.prompt,
+        age: age !== undefined ? age : metadata.age,
+        theme: theme !== undefined ? theme : metadata.theme,
+        length: length !== undefined ? length : metadata.length,
         lastEdited: new Date().toISOString(),
         editInstructions,
         tags: currentTags,
@@ -152,12 +177,7 @@ export async function PUT(request, { params }) {
       success: true,
       id,
       story: editedStory,
-      metadata: {
-        ...metadata,
-        lastEdited: new Date().toISOString(),
-        tags: currentTags,
-        categories: currentCategories
-      }
+      metadata: updatedStoryData.metadata
     });
   } catch (error) {
     console.error('Error in edit-story endpoint:', error);

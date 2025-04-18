@@ -14,6 +14,8 @@ export default function EditStory() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [story, setStory] = useState(null);
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
+  const [previewStory, setPreviewStory] = useState(null);
   const { data: session, status } = useSession();
   
   // Fetch the story when component mounts
@@ -50,12 +52,21 @@ export default function EditStory() {
     setError(null);
     
     try {
+      // The tag generation will be handled server-side in the API
+      // We just need to pass all the form data to the API
+      
       const response = await fetch(`/api/story/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          // Include all form data fields
+          title: formData.title,
+          prompt: formData.prompt,
+          age: formData.age,
+          theme: formData.theme,
+          length: formData.length,
           editInstructions: formData.editInstructions,
           customTags: formData.customTags,
           categories: formData.categories
@@ -67,8 +78,11 @@ export default function EditStory() {
         throw new Error(errorData.message || 'Failed to update story');
       }
       
-      // Navigate back to the story view
-      router.push(`/story/${id}`);
+      // Get the updated story and show preview
+      const updatedStory = await response.json();
+      setPreviewStory(updatedStory);
+      setIsPreviewMode(true);
+      
     } catch (err) {
       console.error('Error updating story:', err);
       setError(err.message || 'An error occurred while updating the story');
@@ -77,7 +91,18 @@ export default function EditStory() {
     }
   };
   
-  if (loading) {
+  const confirmSave = async () => {
+    // The story is already saved in the database from the edit submission
+    // Just navigate back to the stories list
+    router.push('/parent/my-stories');
+  };
+  
+  const cancelPreview = () => {
+    setIsPreviewMode(false);
+    setPreviewStory(null);
+  };
+  
+  if (loading && !isPreviewMode) {
     return (
       <div className="text-center py-12">
         <LoadingSpinner />
@@ -86,7 +111,7 @@ export default function EditStory() {
     );
   }
   
-  if (error) {
+  if (error && !isPreviewMode) {
     return (
       <div className="create-story-container max-w-5xl mx-auto">
         <h1 className="create-story-title">Edit Story</h1>
@@ -94,7 +119,7 @@ export default function EditStory() {
           <p className="text-red-700 font-semibold text-center">{error}</p>
         </div>
         <div className="story-actions mt-6 flex justify-center gap-4">
-          <Button onClick={() => router.push('/my-stories')} variant="secondary">
+          <Button onClick={() => router.push('/parent/my-stories')} variant="secondary">
             Back to My Stories
           </Button>
         </div>
@@ -102,15 +127,62 @@ export default function EditStory() {
     );
   }
   
-  if (!story) {
+  if (!story && !isPreviewMode) {
     return (
       <div className="create-story-container max-w-5xl mx-auto">
         <h1 className="create-story-title">Edit Story</h1>
         <div className="card text-center py-8">
           <p className="text-xl text-indigo-800 mb-4">Story not found</p>
           <p className="text-indigo-600 mb-6">The story you're trying to edit doesn't exist or has been deleted.</p>
-          <Button onClick={() => router.push('/my-stories')} variant="primary">
+          <Button onClick={() => router.push('/parent/my-stories')} variant="primary">
             Go to My Stories
+          </Button>
+        </div>
+      </div>
+    );
+  }
+  
+  if (isPreviewMode && previewStory) {
+    return (
+      <div className="create-story-container max-w-5xl mx-auto">
+        <h1 className="create-story-title">Preview Updated Story</h1>
+        
+        <div className="story-card mb-6">
+          <h2 className="card-title">{previewStory.metadata?.title || "Untitled Story"}</h2>
+          <div className="prose max-w-none">
+            {previewStory.story.split('\n').map((paragraph, i) => (
+              paragraph.trim() ? <p key={i} className="mb-4 text-lg">{paragraph}</p> : null
+            ))}
+          </div>
+        </div>
+        
+        <div className="card mt-6">
+          <h3 className="card-title mb-4">Story Details</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 rounded-lg bg-ffd700 bg-opacity-10">
+              <p className="mb-2"><strong>Age Range:</strong> {previewStory.metadata?.age} years</p>
+              <p className="mb-2"><strong>Theme:</strong> {previewStory.metadata?.theme}</p>
+              <p className="mb-2"><strong>Length:</strong> {previewStory.metadata?.length}</p>
+            </div>
+            <div className="p-4 rounded-lg bg-ffd700 bg-opacity-10">
+              <p className="mb-2"><strong>Tags:</strong></p>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {previewStory.metadata?.tags?.map(tag => (
+                  <span key={tag} className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-md text-sm font-medium">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="story-actions mt-6 flex justify-center gap-4">
+          <Button onClick={cancelPreview} variant="secondary">
+            Continue Editing
+          </Button>
+          <Button onClick={confirmSave} variant="primary">
+            Save Changes & Return to My Stories
           </Button>
         </div>
       </div>
@@ -120,6 +192,7 @@ export default function EditStory() {
   // Prepare initial data for the form
   const initialData = {
     id: story.id,
+    title: story.metadata.title || '',
     prompt: story.metadata.prompt || '',
     age: story.metadata.age || 7,
     theme: story.metadata.theme || 'adventure',
