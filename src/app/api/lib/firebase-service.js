@@ -1,12 +1,19 @@
 // app/api/lib/firebase-service.js
 import { 
+  getFirestore, 
   collection, 
   doc, 
   getDoc, 
   getDocs, 
   setDoc, 
   updateDoc, 
-  deleteDoc
+  deleteDoc,
+  query,
+  where,
+  orderBy,
+  limit,
+  startAt,
+  Timestamp 
 } from "firebase/firestore";
 import { db } from "src/lib/firebase/firebase_conf";
 
@@ -32,6 +39,11 @@ export async function saveStory(id, storyData) {
       }
     };
     
+    // Add lastEdited timestamp if it exists
+    // if (storyData.metadata.lastEdited) {
+    //   processedData.metadata.lastEdited = Timestamp.fromDate(new Date(storyData.metadata.lastEdited));
+    // }
+    
     await setDoc(storyRef, processedData);
     return true;
   } catch (error) {
@@ -48,7 +60,6 @@ export async function saveStory(id, storyData) {
 export async function getStory(id) {
   try {
     const storyRef = doc(db, STORIES_COLLECTION, id);
-    console.log(storyRef);
     const storySnap = await getDoc(storyRef);
     
     if (!storySnap.exists()) {
@@ -56,13 +67,16 @@ export async function getStory(id) {
     }
     
     const data = storySnap.data();
+    console.log(data)
     
     // Convert Firestore timestamps back to ISO strings for consistency
     return {
       ...data,
       id: storySnap.id,
       metadata: {
-        ...data.metadata
+        ...data.metadata,
+        // createdAt: data.metadata.createdAt.toDate().toISOString()
+        // l// astEdited: data.metadata.lastEdited ? data.metadata.lastEdited.toDate().toISOString() : undefined
       }
     };
   } catch (error) {
@@ -86,7 +100,18 @@ export async function updateStory(id, updates) {
     
     if (updates.metadata) {
       processedUpdates.metadata = { ...updates.metadata };
-    
+      
+      // if (updates.metadata.lastEdited) {
+      //   processedUpdates.metadata.lastEdited = Timestamp.fromDate(new Date(updates.metadata.lastEdited));
+      // }
+      
+      // if (updates.metadata.lastTagUpdate) {
+      //   processedUpdates.metadata.lastTagUpdate = Timestamp.fromDate(new Date(updates.metadata.lastTagUpdate));
+      // }
+      
+      // if (updates.metadata.lastCategoryUpdate) {
+      //   processedUpdates.metadata.lastCategoryUpdate = Timestamp.fromDate(new Date(updates.metadata.lastCategoryUpdate));
+      // }
     }
     
     await updateDoc(storyRef, processedUpdates);
@@ -154,7 +179,11 @@ export async function getStories({
         ...data,
         id: doc.id,
         metadata: {
-          ...data.metadata
+          ...data.metadata,
+          // createdAt: data.metadata.createdAt.toDate().toISOString(),
+          // lastEdited: data.metadata.lastEdited ? data.metadata.lastEdited.toDate().toISOString() : undefined,
+          // lastTagUpdate: data.metadata.lastTagUpdate ? data.metadata.lastTagUpdate.toDate().toISOString() : undefined,
+          // lastCategoryUpdate: data.metadata.lastCategoryUpdate ? data.metadata.lastCategoryUpdate.toDate().toISOString() : undefined
         }
       };
     });

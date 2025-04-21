@@ -58,33 +58,37 @@ export default function StoryForm({ onSubmit, initialData = {} }) {
   return (
     <form onSubmit={handleSubmit} className="story-card">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div className="form-group md:col-span-2">
-        <label htmlFor="title" className="form-label">Story Title</label>
-        <input
-         id="title"
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
-          placeholder="Enter a title for your story..."
-          className="form-input"
-          required
-        />
-        </div>
         <div className="form-group md:col-span-2">
-          <label htmlFor="prompt" className="form-label">Story Prompt</label>
-          <textarea
-            id="prompt"
-            name="prompt"
-            value={formData.prompt}
+          <label htmlFor="title" className="form-label">Story Title</label>
+          <input
+            id="title"
+            name="title"
+            value={formData.title}
             onChange={handleChange}
-            placeholder="Describe what you want the story to be about..."
-            className="form-textarea h-24"
+            placeholder="Enter a title for your story..."
+            className="form-input"
             required
           />
-          <p className="text-sm text-gray-500 mt-1">
-            Be specific about characters, settings, or lessons you'd like included.
-          </p>
         </div>
+        
+        {/* Only show the prompt field when creating a new story, not when editing */}
+        {!isEdit && (
+          <div className="form-group md:col-span-2">
+            <label htmlFor="prompt" className="form-label">Story Prompt</label>
+            <textarea
+              id="prompt"
+              name="prompt"
+              value={formData.prompt}
+              onChange={handleChange}
+              placeholder="Describe what you want the story to be about..."
+              className="form-textarea h-24"
+              required
+            />
+            <p className="text-sm text-gray-500 mt-1">
+              Be specific about characters, settings, or lessons you'd like included.
+            </p>
+          </div>
+        )}
         
         <div className="form-group">
           <label htmlFor="age" className="form-label">Child's Age</label>
@@ -150,25 +154,25 @@ export default function StoryForm({ onSubmit, initialData = {} }) {
         </div>
         
         <div className="form-group md:col-span-2">
-            <label className="input-label">Categories</label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2">
-                {categories.map(category => (
-                <label key={category} className="category-label flex items-center">
-                    <input
-                        type="checkbox"
-                        value={category}
-                        checked={formData.categories.includes(category)}
-                        onChange={handleCategoriesChange}
-                        className="category-checkbox mr-2"
-                    />
+          <label className="input-label">Categories</label>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2">
+            {categories.map(category => (
+              <label key={category} className="category-label flex items-center">
+                <input
+                  type="checkbox"
+                  value={category}
+                  checked={formData.categories.includes(category)}
+                  onChange={handleCategoriesChange}
+                  className="category-checkbox mr-2"
+                />
                 <span> {category.charAt(0).toUpperCase() + category.slice(1)}</span>
-             </label>
+              </label>
             ))}
+          </div>
+          <p className="text-sm text-indigo-800 mt-2">
+            Select categories that best describe your story
+          </p>
         </div>
-  <p className="text-sm text-indigo-800 mt-2">
-    Select categories that best describe your story
-  </p>
-</div>
         
         {isEdit && (
           <div className="form-group md:col-span-2">
@@ -182,27 +186,30 @@ export default function StoryForm({ onSubmit, initialData = {} }) {
               className="form-textarea h-24"
               required
             />
+            <p className="text-sm text-gray-500 mt-1">
+              The original prompt and story context will be preserved while making these changes.
+            </p>
           </div>
         )}
       </div>
       
       <div className="mt-6 flex justify-center gap-4">
-          {/* Cancel button */}
-          <Button 
-              type="button" // Important: type="button" prevents form submission
-              variant="secondary"
-              onClick={() => window.history.back()} // Go back to previous page
-          >
-            Cancel
-          </Button>
-  
-          {/* Submit button */}
-          <Button 
-              type="submit" 
-              variant="primary"
-          >
-              {isEdit ? 'Update Story' : 'Generate Story'}
-          </Button>
+        {/* Cancel button */}
+        <Button 
+          type="button"
+          variant="secondary"
+          onClick={() => window.history.back()}
+        >
+          Cancel
+        </Button>
+        
+        {/* Submit button */}
+        <Button 
+          type="submit" 
+          variant="primary"
+        >
+          {isEdit ? 'Update Story' : 'Generate Story'}
+        </Button>
       </div>
     </form>
   );

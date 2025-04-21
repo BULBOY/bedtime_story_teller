@@ -153,7 +153,7 @@ export async function generateStory(prompt, age, theme = 'adventure', length = '
 }
 
 // Edit an existing story
-export async function editStory(existingStory, editInstructions, age, theme = 'adventure', length = 'medium') {
+export async function editStory(existingStory, editInstructions, age, theme = 'adventure', length = 'medium', prompt = '', tags = []) {
   try {
     console.log(`Attempting to edit a story with Google AI...`);
     
@@ -162,10 +162,23 @@ export async function editStory(existingStory, editInstructions, age, theme = 'a
       return existingStory + "\n\n[Note: We couldn't apply your edits at this time. Please try again later.]";
     }
     
-    // Create the system prompt for editing
-    const systemPrompt = `Edit the following children's bedtime story according to these instructions: "${editInstructions}".
+    // Format tags to include in the prompt if available
+    const tagsString = tags && tags.length > 0 
+      ? `Current story tags: ${tags.join(', ')}.` 
+      : '';
+    
+    // Include original prompt if available
+    const originalPromptInfo = prompt 
+      ? `Original story prompt: "${prompt}".` 
+      : '';
+    
+    // Create the system prompt for editing with combined information
+    const systemPrompt = `Edit the following children's bedtime story according to these instructions: "${editInstructions},${originalPromptInfo},${tagsString}".
+    
+    
     The story should remain appropriate for a ${age}-year-old child, maintain the theme of ${theme},
-    keep a ${length} length, have a positive message, and end with a calming conclusion suitable for bedtime.`;
+    keep a ${length} length, have a positive message, and end with a calming conclusion suitable for bedtime.
+    Preserve the story's key elements while applying the requested changes.`;
     
     // Combine the prompt with the existing story
     const fullPrompt = `${systemPrompt}\n\nExisting story:\n${existingStory}`;

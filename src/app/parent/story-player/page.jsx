@@ -96,7 +96,7 @@ export default function StoryPlayer() {
       <section className="story-player-container">
         <h1 className="story-title">Story Not Found</h1>
         <p>Sorry, we couldn't find the story you're looking for.</p>
-        <Button variant="primary" onClick={() => window.location.href = "/child/dashboard"}>
+        <Button variant="primary" onClick={() => window.location.href = "/parent/dashboard"}>
           Back to Dashboard
         </Button>
       </section>
@@ -104,8 +104,47 @@ export default function StoryPlayer() {
   }
 
   return (
+    
     <section className="story-player-container">
       <h1 className="story-title">
+        {/* Sidebar / Navbar on the left */}
+                          <div className="dashboard-actions-container">
+                            <h1 className="dashboard-title">Parent Dashboard</h1>
+                            <p className="dashboard-description">Manage your bedtime stories</p>
+                    
+                            <div className="dashboard-actions">
+                              <Button
+                                variant="secondary"
+                                onClick={() => (window.location.href = "/parent/create-story")}
+                              >
+                                Create New Story
+                              </Button>
+                              <Button
+                                variant="secondary"
+                                onClick={() => (window.location.href = "/parent/my-stories")}
+                              >
+                                My Stories
+                              </Button>
+                              <Button
+                                variant="secondary"
+                                onClick={() => (window.location.href = "/parent/profile")}
+                              >
+                                Profile
+                              </Button>
+                              <Button
+                                variant="secondary"
+                                onClick={() => (window.location.href = "/parent/settings")}
+                              >
+                                Settings
+                              </Button>
+                            </div>
+                          </div>
+              
+              {error && (
+                <div className="card border-l-4 border-red-500 p-4 mb-6">
+                  <p className="text-red-700 font-semibold text-center">{error}</p>
+                </div>
+              )}
         {story.metadata?.title || story.metadata?.theme?.charAt(0).toUpperCase() + story.metadata?.theme?.slice(1) || 'Bedtime Story'}
       </h1>
       
@@ -131,7 +170,7 @@ export default function StoryPlayer() {
       </div>
       
       <div className="story-actions mt-6">
-        <Button variant="secondary" onClick={() => window.location.href = "/child/dashboard"}>
+        <Button variant="secondary" onClick={() => window.location.href = "/parent/dashboard"}>
           Back to Dashboard
         </Button>
       </div>

@@ -43,9 +43,6 @@ export default function Settings() {
       <label>
         <input type="checkbox" /> Enable Notifications
       </label>
-      <label>
-        <input type="checkbox" /> Use AI Text-to-Speech
-      </label>
 
       <Button>Save Settings</Button>
     </section>

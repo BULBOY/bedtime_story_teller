@@ -14,10 +14,10 @@ export async function POST(request) {
       }, { status: 400 });
     }
     
-    // // Add creation timestamp if not present
-    // if (!storyData.metadata.createdAt) {
-    //   storyData.metadata.createdAt = new Date().toISOString();
-    // }
+    // Add creation timestamp if not present
+    if (!storyData.metadata.createdAt) {
+      storyData.metadata.createdAt = new Date().toISOString();
+    }
     
     // Save to Firebase
     await saveStory(storyData.id, {
