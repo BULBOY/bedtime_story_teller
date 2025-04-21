@@ -138,9 +138,21 @@ export default function MyStories() {
     
     // Filter by age
     if (filters.age !== "all") {
+<<<<<<< HEAD
       result = result.filter(story => 
         story.metadata?.age === parseInt(filters.age)
       );
+=======
+      const selectedAge = parseInt(filters.age);
+      result = result.filter(story => {
+        // Handle both cases where age might be stored as number or string
+        const storyAge = typeof story.metadata?.age === 'string' 
+          ? parseInt(story.metadata.age) 
+          : story.metadata?.age;
+        
+        return storyAge === selectedAge;
+      });
+>>>>>>> 8d3f0cd7 (test-23.04)
     }
     
     // Filter by length

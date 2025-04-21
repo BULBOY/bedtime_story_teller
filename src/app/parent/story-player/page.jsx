@@ -1,12 +1,21 @@
 "use client"; 
 
+<<<<<<< HEAD
 import { useState, useEffect } from "react";
+=======
+import { useState, useEffect, Suspense } from "react";
+>>>>>>> 8d3f0cd7 (test-23.04)
 import { useSearchParams } from 'next/navigation';
 import Button from "@components/Button";
 import LoadingSpinner from "@components/LoadingSpinner";
 import AudioPlayer from "@components/AudioPlayer";
 
+<<<<<<< HEAD
 export default function StoryPlayer() {
+=======
+// Create a separate component that uses useSearchParams
+function StoryPlayerContent() {
+>>>>>>> 8d3f0cd7 (test-23.04)
   const searchParams = useSearchParams();
   const storyId = searchParams.get('id');
   
@@ -70,40 +79,64 @@ export default function StoryPlayer() {
 
   if (loading) {
     return (
+<<<<<<< HEAD
       <section className="story-player-container">
         <div className="text-center py-8">
           <LoadingSpinner />
           <p className="mt-4 text-lg">Loading your story...</p>
         </div>
       </section>
+=======
+      <div className="text-center py-8">
+        <LoadingSpinner />
+        <p className="mt-4 text-lg">Loading your story...</p>
+      </div>
+>>>>>>> 8d3f0cd7 (test-23.04)
     );
   }
 
   if (error) {
     return (
+<<<<<<< HEAD
       <section className="story-player-container">
+=======
+      <div>
+>>>>>>> 8d3f0cd7 (test-23.04)
         <h1 className="story-title">Error</h1>
         <p className="text-red-500">{error}</p>
         <Button variant="primary" onClick={() => window.history.back()}>
           Go Back
         </Button>
+<<<<<<< HEAD
       </section>
+=======
+      </div>
+>>>>>>> 8d3f0cd7 (test-23.04)
     );
   }
 
   if (!story) {
     return (
+<<<<<<< HEAD
       <section className="story-player-container">
+=======
+      <div>
+>>>>>>> 8d3f0cd7 (test-23.04)
         <h1 className="story-title">Story Not Found</h1>
         <p>Sorry, we couldn't find the story you're looking for.</p>
         <Button variant="primary" onClick={() => window.location.href = "/parent/dashboard"}>
           Back to Dashboard
         </Button>
+<<<<<<< HEAD
       </section>
+=======
+      </div>
+>>>>>>> 8d3f0cd7 (test-23.04)
     );
   }
 
   return (
+<<<<<<< HEAD
     
     <section className="story-player-container">
       <h1 className="story-title">
@@ -145,6 +178,10 @@ export default function StoryPlayer() {
                   <p className="text-red-700 font-semibold text-center">{error}</p>
                 </div>
               )}
+=======
+    <div>
+      <h1 className="story-title">
+>>>>>>> 8d3f0cd7 (test-23.04)
         {story.metadata?.title || story.metadata?.theme?.charAt(0).toUpperCase() + story.metadata?.theme?.slice(1) || 'Bedtime Story'}
       </h1>
       
@@ -174,6 +211,28 @@ export default function StoryPlayer() {
           Back to Dashboard
         </Button>
       </div>
+<<<<<<< HEAD
     </section>
   );
 };
+=======
+    </div>
+  );
+}
+
+// Main component that wraps the content in Suspense
+export default function StoryPlayer() {
+  return (
+    <section className="story-player-container">
+      <Suspense fallback={
+        <div className="text-center py-8">
+          <LoadingSpinner />
+          <p className="mt-4 text-lg">Loading story player...</p>
+        </div>
+      }>
+        <StoryPlayerContent />
+      </Suspense>
+    </section>
+  );
+}
+>>>>>>> 8d3f0cd7 (test-23.04)
