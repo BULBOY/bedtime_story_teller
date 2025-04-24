@@ -5,21 +5,6 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from 'src/lib/firebase/firebase_conf';
 import { doc, getDoc } from "firebase/firestore";
 
-// Try to access Firebase Functions config if available
-const getNextAuthSecret = () => {
-  try {
-    // Check if we're in a Firebase Functions environment
-    if (typeof process.env.FUNCTION_TARGET !== 'undefined') {
-      const functions = require('firebase-functions');
-      return functions.config().nextauth?.secret;
-    }
-    return process.env.NEXTAUTH_SECRET;
-  } catch (error) {
-    console.error("Error accessing NextAuth secret:", error);
-    return process.env.NEXTAUTH_SECRET;
-  }
-};
-
 export const authOptions = {
   providers: [
     CredentialsProvider({
@@ -47,23 +32,10 @@ export const authOptions = {
           const userDoc = await getDoc(doc(db, "users", user.uid));
           const userData = userDoc.exists() ? userDoc.data() : {};
           
-          // Determine the base URL (prefer Firebase function config if available)
-          const baseUrl = (() => {
-            try {
-              if (typeof process.env.FUNCTION_TARGET !== 'undefined') {
-                const functions = require('firebase-functions');
-                return functions.config().nextauth?.url;
-              }
-              return process.env.NEXTAUTH_URL || 'http://localhost:3000';
-            } catch (error) {
-              console.error("Error accessing NextAuth URL:", error);
-              return process.env.NEXTAUTH_URL || 'http://localhost:3000';
-            }
-          })();
-          
           // Perform health check after successful authentication
           try {
             // This is a server-side function, so we need to use absolute URL
+            const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
             const healthResponse = await fetch(`${baseUrl}/api/health`);
             const healthData = await healthResponse.json();
             
@@ -119,9 +91,7 @@ export const authOptions = {
   },
   session: {
     strategy: "jwt"
-  },
-  // Get secret from Firebase Functions config or environment variable
-  secret: getNextAuthSecret()
+  }
 };
 
 const handler = NextAuth(authOptions);
