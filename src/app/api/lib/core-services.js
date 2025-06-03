@@ -109,8 +109,9 @@ export async function generateStory(prompt, age, theme = 'adventure', length = '
     const fullPrompt = `${systemPrompt}\n\n${prompt}`;
     
     // Try different model options
-    const modelOptions = ["gemini-1.5-pro", "gemini-pro", "gemini-1.0-pro"];
-    
+    const modelOptions = ["gemini-1.5-pro","gemini-1.5-flash", "gemini-pro", "gemini-1.0-pro"];
+    // In your generateTags function around line 285
+  
     // Try each model until one works
     for (const modelName of modelOptions) {
       try {
